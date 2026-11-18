@@ -1,11 +1,13 @@
 fn main() {
     // Warm up questions
     // Meaning of Life
+    println!("~~~~~ Meaning of Life ~~~~~");
     println!("{:?}", hitchhiker(&[1, 2, 3, 4, 42, 5, 6, 3, 4]));
     println!("{:?}", hitchhiker(&[2, 4, 6]));
     println!("{:?}", hitchhiker(&[2, 4, 6, 42, 3, 24, 42]));
 
     // Every other element
+    println!("~~~~~ Every Other ~~~~~");
     println!("{:?}", everyother(&[2, 4, 6, 42, 3, 24, 42]));
     println!("{:?}", everyother(&[1, 2]));
     println!("{:?}", everyother(&[3, 5, 7, 11, 13, 17, 19, 29, 31, 41, 43]));
@@ -15,7 +17,19 @@ fn main() {
 
 
     // Binary Addition
+    println!("~~~~~ Binary Addition ~~~~~");
     println!("{:?}", binaryAddition(&mut[1,0,1,1], &mut[1,0]));
+    println!("{:?}", binaryAddition(&mut[1,0,0,1,1,0,1], &mut[0,0,1,0,0,1,0]));
+    println!("{:?}", binaryAddition(&mut[1,0,0,1,0,0,1], &mut[0,0,1,1,0,0,1]));
+    println!("{:?}", binaryAddition(&mut[1,0,0,0,1,1,1], &mut[1,0,1,1,0]));
+
+    // Binary Subtraction
+    // Assuming it's list1 - list2
+    println!("~~~~~ Binary Subtraction ~~~~~");
+    println!("{:?}", binarySubtraction(&mut[1,0,1,1], &mut[1,0]));
+    println!("{:?}", binarySubtraction(&mut[0,1,0,1,0,0,0,0], &mut[1,1,0,0,0]));
+    println!("{:?}", binarySubtraction(&mut[1,1,0,1,0], &mut[1,0, 1, 1, 1]));
+    println!("{:?}", binarySubtraction(&mut[1,0,0,0,0,1,0,0], &mut[0,1,1,0,1,1,1,1]));
 }
 
 // Meaning of life
@@ -62,9 +76,9 @@ pub fn binaryAddition(list1: &mut[i32], list2: &mut[i32]) -> Vec<i32> {
     list2.reverse();
 
     // convert to booleans
-    let bool1 = toBool(list1);
+    let bool1 = to_bool(list1);
 
-    let bool2 = toBool(list2);
+    let bool2 = to_bool(list2);
 
     // Call doBinaryAddition
     let mut sum = doBinaryAddition(&bool1, &bool2, false);
@@ -73,14 +87,14 @@ pub fn binaryAddition(list1: &mut[i32], list2: &mut[i32]) -> Vec<i32> {
     sum.reverse();
 
     // Convert back to 0s and 1s
-    toBinary(&sum)
+    to_binary(&sum)
 }
 
 
 pub fn doBinaryAddition(list1: &[bool], list2: &[bool], carry: bool) -> Vec<bool> {
     match (list1, list2, carry) {
         ([], [], false) => Vec::<bool>::new(),
-        
+
         ([], [], true) => vec![true],
 
         ([false, rest1 @ ..], [false, rest2 @ ..], carry) => {
@@ -150,7 +164,42 @@ pub fn finishBinaryAddition(longer_list: &[bool], carry: bool) -> Vec<bool> {
     }
 }
 
-fn toBool(list: &[i32]) -> Vec<bool> {
+pub fn binarySubtraction(list1: &mut[i32], list2: &mut[i32]) -> Vec<i32> {
+    // reverse lists
+    list1.reverse();
+    list2.reverse();
+
+    // convert to booleans
+    let bool1 = to_bool(list1);
+
+    let mut bool2 = to_bool(list2);
+
+    // Lists have to be the same length for two's complement
+    // Base case: lengths are equal
+    match_lengths(bool1.len(), bool2.len(), &mut bool2);
+
+    // Two's complement
+    // Swap values (true to false/1 to 0, false to true/0 to 1)
+    bool2 = swap(&bool2);
+
+    // add 1, treating it as a carry bit (true)
+    bool2 = finishBinaryAddition(&bool2, true);
+    bool2.truncate(bool1.len()); // carry for the most significant bit is dropped
+
+    // Call doBinaryAddition
+    let mut difference = doBinaryAddition(&bool1, &bool2, false);
+
+    // drop carry for most significant bit
+    difference.truncate(bool1.len());
+
+    // Reverse sum (so that it's in the correct order)
+    difference.reverse();
+
+    // Convert back to 0s and 1s
+    to_binary(&difference)
+}
+
+fn to_bool(list: &[i32]) -> Vec<bool> {
     list.iter()
         .map(|&int| match int {
             1 => true,
@@ -159,11 +208,27 @@ fn toBool(list: &[i32]) -> Vec<bool> {
         .collect()
 }
 
-fn toBinary(list: &[bool]) -> Vec<i32> {
+fn to_binary(list: &[bool]) -> Vec<i32> {
         list.iter()
         .map(|&int| match int {
             true => 1,
             _ => 0, // since we are assuming that all inputs are valid
         })
         .collect()
+}
+
+fn swap(list: &[bool]) -> Vec<bool> {
+        list.iter()
+        .map(|&int| match int {
+            true => false,
+            _ => true, // since we are assuming that all inputs are valid
+        })
+        .collect()
+}
+
+fn match_lengths(size1: usize, size2: usize, list: &mut Vec<bool>) {
+    if size2 < size1 {
+        list.push(false);
+        match_lengths(size1, size2+1, list);
+    }
 }
