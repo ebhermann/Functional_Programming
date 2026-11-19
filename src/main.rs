@@ -34,6 +34,89 @@ fn main() {
     println!("{:?}", binarySubtraction(&mut[0,1,0,1,0,0,0,0], &mut[1,1,0,0,0]));
     println!("{:?}", binarySubtraction(&mut[1,1,0,1,0], &mut[1,0, 1, 1, 1]));
     println!("{:?}", binarySubtraction(&mut[1,0,0,0,0,1,0,0], &mut[0,1,1,0,1,1,1,1]));
+
+    // Translation
+    let chinese: Vec<&str> = vec!["ling", "yi", "er", "san", "si", "wu", "liu", "qi", "ba", "jiu", "shi",];
+    translate(&chinese);
+
+    let input = vec!["yi", "nine", "six", "ba"];
+    translate(&input);
+
+    let input2 = vec!["yi", "josh", "three", "si"];
+    translate(&input2);
+
+    let input3 = vec!["er", "cat", "six", "cocoa", "si", "qi", "one"];
+    translate(&input3);
+}
+
+pub fn translate(list: &[&str]) {
+    let mut translated_list: Vec<i32> = list.iter()
+        .copied()
+        .map(to_num)
+        .collect();
+
+    // Filter list to remove unknown words
+    translated_list = translated_list.iter()
+        .cloned()
+        .filter(|x| *x >= 0)
+        .collect();
+
+    // Print out list
+    // could i reuse the printing? because i need to do addition and multiplication and print them
+    // can probably recurse
+    println!("Translation: {}", print(&translated_list, "regular"));
+
+    // Addition
+    let sum = add(&translated_list);
+    println!("Addition: {} = {}", print(&translated_list, "add"), sum);
+
+    // Multiplication
+    let product = multiply(&translated_list);
+    println!("Multiplication: {} = {}", print(&translated_list, "multiply"), product);
+
+    println!();
+}
+
+fn to_num(word: &str) -> i32 {
+    match word {
+        "ling" | "zero" => 0,
+        "yi" | "one" => 1,
+        "er" | "two" => 2,
+        "san" | "three" => 3,
+        "si" | "four" => 4,
+        "wu" | "five" => 5,
+        "liu" | "six" => 6,
+        "qi" | "seven" => 7,
+        "ba" | "eight" => 8,
+        "jiu" | "nine" => 9,
+        "shi" | "ten" => 10,
+        _ => -1 // indicates unknown word, will be ignored later
+    }
+}
+
+fn add(list: &[i32]) -> i32 {
+    match list {
+        [] => 0,
+        [head, rest @ ..] => head + add(rest)
+    }
+}
+
+fn multiply(list: &[i32]) -> i32 {
+    match list {
+        [] => 1,
+        [head, rest @ ..] => head * multiply(rest)
+    }
+}
+
+fn print(list: &[i32], print_type: &str) -> String {
+    match (list, print_type) {
+        ([], _any) => String::new(),
+        ([single], _any) => single.to_string(),
+        ([head, rest @ ..], "regular") => head.to_string() + " " + &print(rest, print_type),
+        ([head, rest @ ..], "add") => head.to_string() + " + " + &print(rest, print_type),
+        ([head, rest @ ..], "multiply") => head.to_string() + " * " + &print(rest, print_type),
+        ([head, rest @ ..], _) => head.to_string() + " " + &print(rest, print_type),
+    }
 }
 
 // Meaning of life
