@@ -14,7 +14,11 @@ fn main() {
     println!("{:?}", everyother(&[1, 2, 3, 4, 5, 6]));
 
     // Goldbach's Conjecture
-
+    println!("~~~~~ Goldbach ~~~~~");
+    goldbach(28);
+    goldbach(14);
+    goldbach(108);
+    goldbach(420);
 
     // Binary Addition
     println!("~~~~~ Binary Addition ~~~~~");
@@ -59,15 +63,50 @@ pub fn everyother(list: &[i32]) -> Vec<i32> {
 
 // Goldbach's Conjecture
 pub fn goldbach(n: i32) {
-    // error checking could be done with pattern matching...check that it's greater than 2 and even?
-    // base case might be 2? I'm not sure....need to see some examples
-    // every even number greater than 2 
-    // 28 = 5 + 23
-    /*
-        30 = 13 + 17
-        46 = 23 + 23
-     */
+    match n > 2 && n % 2 == 0 {
+        true => {  
+            let primes = goldbach_recurse(n, 2, n);
+            println!("{} + {} = {}", primes.0, primes.1, n);
+        } 
+        false => {
+            println!("Error. The number is not even and greater than 2");
+        }
+
 }
+}
+
+fn is_prime(n: i32, divisor: i32) -> bool {
+    match divisor * divisor <= n {
+        true => {
+        match n % divisor {
+            0 => false,
+            _ => is_prime(n, divisor+1)
+        }
+    }
+        false => true
+    } 
+}
+
+
+fn goldbach_recurse(mut num1: i32, num2: i32, original: i32) -> (i32, i32) {
+    match num2 < original / 2 {
+        true => {
+            num1 = original - num2;
+            match (is_prime(num1, 2), is_prime(num2, 2)) {
+                (true, true) => {
+                    (num1, num2)
+                }
+                _ => {
+                    goldbach_recurse(num1, num2+1, original)
+                }
+            } 
+        }
+        false => { // this branch won't be reached since goldbach's theorem will find 2 primes, so return a placeholder
+            (0, 0)
+        }
+    }
+}
+
 
 // Binary Addition and Subtraction
 pub fn binaryAddition(list1: &mut[i32], list2: &mut[i32]) -> Vec<i32> {
