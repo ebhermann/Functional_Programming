@@ -37,19 +37,19 @@ fn main() {
 
     // Translation
     let chinese: Vec<&str> = vec!["ling", "yi", "er", "san", "si", "wu", "liu", "qi", "ba", "jiu", "shi",];
-    translate(&chinese);
+    go(&chinese);
 
     let input = vec!["yi", "nine", "six", "ba"];
-    translate(&input);
+    go(&input);
 
     let input2 = vec!["yi", "josh", "three", "si"];
-    translate(&input2);
+    go(&input2);
 
     let input3 = vec!["er", "cat", "six", "cocoa", "si", "qi", "one"];
-    translate(&input3);
+    go(&input3);
 }
 
-pub fn translate(list: &[&str]) {
+pub fn go(list: &[&str]) {
     let mut translated_list: Vec<i32> = list.iter()
         .copied()
         .map(to_num)
