@@ -123,15 +123,16 @@ fn print(list: &[i32], print_type: &str) -> String {
 
 // Warm up questions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Meaning of life
-// return true if the number 42 is in the list
 pub fn hitchhiker(list: &[i32]) -> bool {
-    let bool_list: Vec<i32> = list.iter() // iterate over the list
-        .copied()
-        .filter(|n| *n == 42) // filters the list to only include the number 42
-        .collect();
-
-    // if the number 42 was in the list, it won't be empty, so true will be returned
-    return !bool_list.is_empty()
+    match list {
+        [] => false, // if the list is empty, 42 wasn't found
+        [head, rest @ ..] => {
+            match head {
+                42 => true, // found 42, so return true
+                _ => hitchhiker(rest) // otherwise, recurse with the rest of the list
+            }
+        }
+    }
 }
 
 // Every other element
