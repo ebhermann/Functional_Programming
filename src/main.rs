@@ -53,18 +53,16 @@ fn main() {
 pub fn go(list: &[&str]) {
     let mut translated_list: Vec<i32> = list.iter()
         .copied()
-        .map(to_num)
+        .map(to_num) //iterate over the list and map each word to a number
         .collect();
 
     // Filter list to remove unknown words
     translated_list = translated_list.iter()
         .cloned()
-        .filter(|x| *x >= 0)
+        .filter(|x| *x >= 0) // unknown words were translated to -1
         .collect();
 
     // Print out list
-    // could i reuse the printing? because i need to do addition and multiplication and print them
-    // can probably recurse
     println!("Translation: {}", print(&translated_list, "regular"));
 
     // Addition
@@ -78,6 +76,7 @@ pub fn go(list: &[&str]) {
     println!();
 }
 
+// translates words to numbers using pattern matching
 fn to_num(word: &str) -> i32 {
     match word {
         "ling" | "zero" => 0,
@@ -95,28 +94,30 @@ fn to_num(word: &str) -> i32 {
     }
 }
 
+// add the numbers in the list using recursion
 fn add(list: &[i32]) -> i32 {
     match list {
-        [] => 0,
-        [head, rest @ ..] => head + add(rest)
+        [] => 0, // if the list is empty, add 0
+        [head, rest @ ..] => head + add(rest) // otherwise, add the head element to the sum and continue to add with the rest of the list
     }
 }
 
+// multiply the numbers in the list using recursion
 fn multiply(list: &[i32]) -> i32 {
     match list {
-        [] => 1,
-        [head, rest @ ..] => head * multiply(rest)
+        [] => 1, // if the list is empty, multiply by 1
+        [head, rest @ ..] => head * multiply(rest) // otherwise, multiply the product by the head and continue to multiply with the rest of the list
     }
 }
 
+// print the translation, addition, or multiplication
 fn print(list: &[i32], print_type: &str) -> String {
-    match (list, print_type) {
-        ([], _any) => String::new(),
-        ([single], _any) => single.to_string(),
-        ([head, rest @ ..], "regular") => head.to_string() + " " + &print(rest, print_type),
-        ([head, rest @ ..], "add") => head.to_string() + " + " + &print(rest, print_type),
-        ([head, rest @ ..], "multiply") => head.to_string() + " * " + &print(rest, print_type),
-        ([head, rest @ ..], _) => head.to_string() + " " + &print(rest, print_type),
+    match (list, print_type) { // type of printing that's performed depends on whether we're printing the translation, addition, or multiplication
+        ([], _any) => String::new(), // print an empty string when the list is empty
+        ([single], _any) => single.to_string(), // if it's a single element, add just the element to the string since we've reached the end of the list and don't want to print a + or * after the last element
+        ([head, rest @ ..], "add") => head.to_string() + " + " + &print(rest, print_type), // addition, so just add the element and + to the string, and recurse with the rest of the list
+        ([head, rest @ ..], "multiply") => head.to_string() + " * " + &print(rest, print_type), // multiplication, so just add the element and * to the string, and recurse with the rest of the list
+        ([head, rest @ ..], _) => head.to_string() + " " + &print(rest, print_type), // translation, so just add the element and a space to the string, and recurse with the rest of the list
     }
 }
 
