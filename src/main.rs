@@ -49,6 +49,7 @@ fn main() {
     go(&input3);
 }
 
+// Translation Functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~``
 pub fn go(list: &[&str]) {
     let mut translated_list: Vec<i32> = list.iter()
         .copied()
@@ -119,10 +120,11 @@ fn print(list: &[i32], print_type: &str) -> String {
     }
 }
 
+// Warm up questions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Meaning of life
 // return true if the number 42 is in the list
 pub fn hitchhiker(list: &[i32]) -> bool {
-    let bool_list: Vec<i32> = list.iter()
+    let bool_list: Vec<i32> = list.iter() // iterate over the list
         .copied()
         .filter(|n| *n == 42) // filters the list to only include the number 42
         .collect();
@@ -134,22 +136,22 @@ pub fn hitchhiker(list: &[i32]) -> bool {
 // Every other element
 pub fn everyother(list: &[i32]) -> Vec<i32> {
     match list {
-        [] => Vec::new(),
-        [_x] => Vec::new(),
+        [] => Vec::new(), // if the list is empty, return an empty vector
+        [_x] => Vec::new(), // if there's only one element, also return an empty vector since every other includes every other element, starting with the second element in the list
         [_x, _y, rest @ ..] => { // x is the first element, which will always be skipped. Y is the second element, which we want to keep. The rest is the list we should extend with
-            let mut next_elem = vec![list[1]];
-            next_elem.extend(everyother(rest));
+            let mut next_elem = vec![list[1]]; // keep the second element in the list, following the every other behavior described
+            next_elem.extend(everyother(rest)); // add the second element to the every other list that's under construction and recurse with the rest of the list
             next_elem
         }
     }
 }
 
-// Goldbach's Conjecture
+// Goldbach's Conjecture ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 pub fn goldbach(n: i32) {
-    match n > 2 && n % 2 == 0 {
+    match n > 2 && n % 2 == 0 { // error checking
         true => {  
-            let primes = goldbach_recurse(n, 2, n);
-            println!("{} + {} = {}", primes.0, primes.1, n);
+            let primes = goldbach_recurse(n, 2, n); // separate recursion function since error checking is done here, store the result in a list
+            println!("{} + {} = {}", primes.0, primes.1, n); // print the primes that add up to the provided even number
         } 
         false => {
             println!("Error. The number is not even and greater than 2");
@@ -159,39 +161,39 @@ pub fn goldbach(n: i32) {
 }
 
 fn is_prime(n: i32, divisor: i32) -> bool {
-    match divisor * divisor <= n {
+    match divisor * divisor <= n { // only continue until the square root of the number because once the square root has been reached, all possible divisors have been tested
         true => {
-        match n % divisor {
-            0 => false,
-            _ => is_prime(n, divisor+1)
+        match n % divisor { // is the number divisible by the current divisor?
+            0 => false, // if it is, the number isn't prime
+            _ => is_prime(n, divisor+1) // otherwise, recurse with a larger divisor
         }
     }
-        false => true
+        false => true // if we've reached this point, the n didn't have any divisors and is therefore prime
     } 
 }
 
 
 fn goldbach_recurse(mut num1: i32, num2: i32, original: i32) -> (i32, i32) {
-    match num2 < original / 2 {
+    match num2 < original / 2 { // only recurse until halfway to the number because once the half has been reached, all possible addends have been tested
         true => {
-            num1 = original - num2;
-            match (is_prime(num1, 2), is_prime(num2, 2)) {
+            num1 = original - num2; // subtract first addend from original num
+            match (is_prime(num1, 2), is_prime(num2, 2)) { // check if the original number - the addend and the addend are both prime
                 (true, true) => {
-                    (num1, num2)
+                    (num1, num2) // if they are, return both and exit as the nums satisfying the conjecture have been found
                 }
-                _ => {
+                _ => { // otherwise, recurse, incrementing the second addend (which is what's subtracted from the original num) by 1
                     goldbach_recurse(num1, num2+1, original)
                 }
             } 
         }
-        false => { // this branch won't be reached since goldbach's theorem will find 2 primes, so return a placeholder
+        false => { // this branch won't be reached since goldbach's theorem will find 2 primes, so return a placeholder. included so the compiler is satisfied
             (0, 0)
         }
     }
 }
 
 
-// Binary Addition and Subtraction
+// Binary Addition and Subtraction ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 pub fn binaryAddition(list1: &mut[i32], list2: &mut[i32]) -> Vec<i32> {
     // reverse lists
     list1.reverse();
